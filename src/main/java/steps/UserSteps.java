@@ -6,11 +6,8 @@ import io.restassured.response.Response;
 import model.LoginModel;
 import model.UserModel;
 
-import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class UserSteps {
     public static final String USER_CREATE_PATH = "/api/auth/register";
@@ -31,7 +28,7 @@ public class UserSteps {
     }
 
     @Step("Авторизация пользователя POST /api/auth/login")
-    public static Response userAuthorization(LoginModel login){
+    public static Response userAuthorization(LoginModel login) {
         return given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -44,7 +41,7 @@ public class UserSteps {
 
 
     @Step("Удаление пользователя DELETE /api/auth/user")
-    public static Response deleteUser(String accessToken){
+    public static Response deleteUser(String accessToken) {
         return given()
                 .log().all()
                 .contentType(ContentType.JSON)
@@ -55,78 +52,30 @@ public class UserSteps {
                 .extract().response();
     }
 
-    @Step("Обновление логина авторизованного пользователя PATCH /api/auth/user")
-    public static Response updateAuthorizedUserEmail(String newEmail, String accessToken){
+    @Step("Обновление данных авторизованного пользователя PATCH /api/auth/user")
+    public static Response updateAuthorizedUser(UserModel user, String accessToken) {
         return given()
                 .log().all()
                 .contentType(ContentType.JSON)
                 .header("Authorization", accessToken)
-                .body(Map.of("email", newEmail))
+                .body(user)
                 .when()
                 .patch(USER_UPDATE_PATH)
                 .then().log().all()
                 .extract().response();
     }
 
-    @Step("Обновление пароля авторизованного пользователя PATCH /api/auth/user")
-    public static Response updateAuthorizedUserPassword(String newPassword, String accessToken){
+
+    @Step("Обновление данных неавторизованного пользователя PATCH /api/auth/user")
+    public static Response updateUnauthorizedUser(UserModel user) {
         return given()
                 .log().all()
                 .contentType(ContentType.JSON)
-                .header("Authorization", accessToken)
-                .body(Map.of("password", newPassword))
+                .body(user)
                 .when()
                 .patch(USER_UPDATE_PATH)
                 .then().log().all()
                 .extract().response();
     }
 
-    @Step("Обновление имени авторизованного пользователя PATCH /api/auth/user")
-    public static Response updateAuthorizedUserName(String newName, String accessToken){
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .header("Authorization", accessToken)
-                .body(Map.of("name", newName))
-                .when()
-                .patch(USER_UPDATE_PATH)
-                .then().log().all()
-                .extract().response();
-    }
-
-    @Step("Обновление логина неавторизованного пользователя PATCH /api/auth/user")
-    public static Response updateUnauthorizedUserEmail(String newEmail){
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("email", newEmail))
-                .when()
-                .patch(USER_UPDATE_PATH)
-                .then().log().all()
-                .extract().response();
-    }
-
-    @Step("Обновление пароля неавторизованного пользователя PATCH /api/auth/user")
-    public static Response updateUnauthorizedUserPassword(String newPassword){
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("password", newPassword))
-                .when()
-                .patch(USER_UPDATE_PATH)
-                .then().log().all()
-                .extract().response();
-    }
-
-    @Step("Обновление имени неавторизованного пользователя PATCH /api/auth/user")
-    public static Response updateUnauthorizedUserName(String newName){
-        return given()
-                .log().all()
-                .contentType(ContentType.JSON)
-                .body(Map.of("name", newName))
-                .when()
-                .patch(USER_UPDATE_PATH)
-                .then().log().all()
-                .extract().response();
-    }
 }

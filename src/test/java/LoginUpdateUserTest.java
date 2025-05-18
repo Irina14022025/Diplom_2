@@ -15,6 +15,7 @@ import static testData.TestValue.USER_NAME;
 
 public class LoginUpdateUserTest {
     private UserModel user;
+    private UserModel updateUser;
     private UserSteps userSteps;
     String accessToken;
     String existAccessToken;
@@ -34,28 +35,37 @@ public class LoginUpdateUserTest {
     @Test
     @DisplayName("Проверка изменения логина авторизованного пользователя")
     public void updateAuthorizedUserEmailTest(){
-        updateAuthorizedUserEmail(USER_UPDATE_EMAIL, accessToken)
+        updateUser = new UserModel(USER_UPDATE_EMAIL, USER_PASSWORD, USER_NAME);
+        updateAuthorizedUser(updateUser, accessToken)
                 .then().assertThat()
                 .statusCode(200)
-                .body("success", equalTo(true));
+                .body("success", equalTo(true))
+                .body("user.email", equalTo(USER_UPDATE_EMAIL))
+                .body("user.name", equalTo(USER_NAME));
     }
 
     @Test
     @DisplayName("Проверка изменения пароля авторизованного пользователя")
     public void updateAuthorizedUserPasswordTest(){
-        updateAuthorizedUserPassword(USER_UPDATE_PASSWORD, accessToken)
+        updateUser = new UserModel(USER_EMAIL, USER_UPDATE_PASSWORD, USER_NAME);
+        updateAuthorizedUser(updateUser, accessToken)
                 .then().assertThat()
                 .statusCode(200)
-                .body("success", equalTo(true));
+                .body("success", equalTo(true))
+                .body("user.email", equalTo(USER_EMAIL))
+                .body("user.name", equalTo(USER_NAME));
     }
 
     @Test
     @DisplayName("Проверка изменения имени авторизованного пользователя")
     public void updateAuthorizedUserNameTest(){
-        updateAuthorizedUserName(USER_UPDATE_NAME, accessToken)
+        updateUser = new UserModel(USER_EMAIL, USER_PASSWORD, USER_UPDATE_NAME);
+        updateAuthorizedUser(updateUser, accessToken)
                 .then().assertThat()
                 .statusCode(200)
-                .body("success", equalTo(true));
+                .body("success", equalTo(true))
+                .body("user.email", equalTo(USER_EMAIL))
+                .body("user.name", equalTo(USER_UPDATE_NAME));
     }
 
     @Test
@@ -66,7 +76,8 @@ public class LoginUpdateUserTest {
         LoginModel existLoginModel = LoginModel.from(existUser);
         Response response = userAuthorization(existLoginModel);
         existAccessToken = response.path("accessToken");
-        updateAuthorizedUserEmail(USER_EXIST_EMAIL, accessToken)
+        updateUser = new UserModel(USER_EXIST_EMAIL, USER_PASSWORD, USER_UPDATE_NAME);
+        updateAuthorizedUser(updateUser, accessToken)
                 .then().assertThat()
                 .statusCode(403)
                 .body("message", equalTo("User with such email already exists"));
@@ -79,7 +90,8 @@ public class LoginUpdateUserTest {
     @Test
     @DisplayName("Проверка изменения логина неавторизованного пользователя")
     public void updateUnauthorizedUserEmailTest(){
-        updateUnauthorizedUserEmail(USER_UPDATE_EMAIL)
+        updateUser = new UserModel(USER_UPDATE_EMAIL, USER_PASSWORD, USER_NAME);
+        updateUnauthorizedUser(updateUser)
                 .then().assertThat()
                 .statusCode(401)
                 .body("message", equalTo("You should be authorised"));
@@ -89,7 +101,8 @@ public class LoginUpdateUserTest {
     @Test
     @DisplayName("Проверка изменения пароля неавторизованного пользователя")
     public void updateUnauthorizedUserPasswordTest(){
-        updateUnauthorizedUserPassword(USER_UPDATE_PASSWORD)
+        updateUser = new UserModel(USER_EMAIL, USER_UPDATE_PASSWORD, USER_NAME);
+        updateUnauthorizedUser(updateUser)
                 .then().assertThat()
                 .statusCode(401)
                 .body("message", equalTo("You should be authorised"));
@@ -98,7 +111,8 @@ public class LoginUpdateUserTest {
     @Test
     @DisplayName("Проверка изменения имени неавторизованного пользователя")
     public void updateUnauthorizedUserNameTest() {
-        updateUnauthorizedUserName(USER_UPDATE_NAME)
+        updateUser = new UserModel(USER_EMAIL, USER_PASSWORD, USER_UPDATE_NAME);
+        updateUnauthorizedUser(updateUser)
                 .then().assertThat()
                 .statusCode(401)
                 .body("message", equalTo("You should be authorised"));
